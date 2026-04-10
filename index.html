@@ -2,69 +2,278 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>จำลองแอปที่ 3</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>จำลองแอปที่ 3 - Game Login</title>
+    <!-- ใช้ Tailwind CSS เพื่อความสวยงามแบบแอปมือถือ -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
+            background-image: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
+            -webkit-tap-highlight-color: transparent;
         }
-        .container {
-            background-color: white;
-            padding: 40px;
-            border-radius: 16px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            text-align: center;
-            max-width: 350px;
+
+        .mobile-container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 380px;
+            min-height: 600px;
+            border-radius: 24px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
         }
-        .logo-placeholder {
-            font-size: 48px;
-            margin-bottom: 10px;
+
+        /* แอนิเมชันพื้นหลังเกม */
+        .game-header {
+            background: url('https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=600&q=80') center/cover;
+            height: 200px;
+            position: relative;
+            transition: height 0.5s ease;
         }
-        h2 {
-            color: #333;
-            margin-top: 0;
+        .game-header.shrink {
+            height: 140px;
         }
-        p {
-            color: #666;
-            margin-bottom: 30px;
-            line-height: 1.5;
+        
+        .game-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 100px;
+            background: linear-gradient(to top, white, transparent);
         }
+
         .btn-chatchat {
-            display: inline-block;
-            background-color: #2C7A7B;
-            color: white;
-            text-decoration: none;
-            padding: 14px 24px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(44, 122, 123, 0.3);
+            background: linear-gradient(135deg, #2C7A7B 0%, #1d4ed8 100%);
+            box-shadow: 0 4px 15px rgba(44, 122, 123, 0.4);
+            transition: all 0.2s ease;
         }
-        .btn-chatchat:hover {
-            background-color: #236162;
-            transform: translateY(-2px);
+        .btn-chatchat:active {
+            transform: scale(0.96);
+            box-shadow: 0 2px 8px rgba(44, 122, 123, 0.3);
+        }
+
+        .view-section {
+            transition: opacity 0.3s ease, transform 0.3s ease;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="logo-placeholder">🎮</div>
-        <h2>แอปเกม ABC</h2>
-        <p>คุณกำลังจะเข้าสู่ระบบเกม ABC<br>เพื่อความรวดเร็ว คุณสามารถใช้บัญชี ChatChat ล็อกอินได้ทันที</p>
+    <div class="mobile-container">
         
-        <!-- 🔗 นี่คือจุดสำคัญ! ลิงก์ที่ยิง Deep Link ไปหาแอป ChatChat ของคุณ -->
-        <a href="chatchat://oauth/authorize?client_id=game_abc_12345&redirect_uri=https://example-game.com/callback&state=secure_random_xyz&scope=profile email" class="btn-chatchat">
-            ล็อกอินด้วย ChatChat
-        </a>
+        <!-- ส่วนหัว (แบนเนอร์เกม) -->
+        <div id="header-bg" class="game-header flex items-end justify-center pb-4 z-10">
+            <div id="game-icon" class="w-24 h-24 bg-white rounded-2xl shadow-xl flex items-center justify-center text-5xl border-4 border-white z-20 transition-all duration-500">
+                🎮
+            </div>
+        </div>
+
+        <!-- พื้นที่เนื้อหาหลัก (Container for Views) -->
+        <div class="relative flex-1 flex flex-col w-full z-10">
+            
+            <!-- ============================================== -->
+            <!-- View 1: หน้าล็อกอินเริ่มต้น -->
+            <!-- ============================================== -->
+            <div id="view-login" class="view-section absolute inset-0 flex flex-col px-8 pt-2 pb-8 text-center bg-white">
+                <h2 class="text-2xl font-black text-gray-900 mb-1 tracking-tight">Epic Game ABC</h2>
+                <p class="text-xs text-gray-500 font-medium mb-6">ยินดีต้อนรับสู่โลกแห่งการผจญภัย</p>
+
+                <!-- กรอบรายละเอียดการขอสิทธิ์ (Consent Details) -->
+                <div class="bg-blue-50 border border-blue-100 rounded-2xl p-4 mb-6 text-left">
+                    <div class="flex items-center mb-3">
+                        <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold text-xs mr-3">CC</div>
+                        <span class="text-xs font-bold text-blue-900">ล็อกอินอย่างปลอดภัยด้วย ChatChat</span>
+                    </div>
+                    <p class="text-[10px] text-gray-600 leading-relaxed">
+                        แอปพลิเคชัน <b>"Game ABC"</b> ต้องการเข้าถึงข้อมูลพื้นฐานของคุณเพื่อสร้างตัวละคร:
+                    </p>
+                    <ul class="text-[10px] text-gray-600 mt-2 space-y-1 ml-4 list-disc marker:text-blue-400">
+                        <li>ชื่อและรูปโปรไฟล์สาธารณะ (Profile)</li>
+                        <li>ที่อยู่อีเมลสำหรับยืนยันตัวตน (Email)</li>
+                    </ul>
+                </div>
+                
+                <!-- 🔗 ลิงก์ Deep Link (จำลองการกด) -->
+                <a href="chatchat://oauth/authorize?client_id=game_abc_12345&redirect_uri=https://example-game.com/callback" 
+                   onclick="simulateOAuthFlow(event, this.href)"
+                   class="btn-chatchat text-white rounded-xl py-3.5 px-4 font-bold text-sm flex items-center justify-center w-full mb-4">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+                    ล็อกอินด้วยแอป ChatChat
+                </a>
+
+                <!-- ตัวเลือกล็อกอินอื่นๆ -->
+                <div class="relative flex items-center py-2 mb-2">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink-0 mx-4 text-gray-400 text-[10px] font-bold uppercase">หรือ</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <button class="w-full bg-gray-100 text-gray-700 font-bold py-3 rounded-xl text-xs active:bg-gray-200 transition-colors">
+                    เข้าเล่นในฐานะ Guest
+                </button>
+
+                <!-- Footer -->
+                <div class="mt-auto pt-6">
+                    <p class="text-[9px] text-gray-400">
+                        การล็อกอินถือเป็นการยอมรับ <a href="#" class="text-blue-500 underline">ข้อตกลงการใช้งาน</a> และ <a href="#" class="text-blue-500 underline">นโยบายความเป็นส่วนตัว</a> ของเรา
+                    </p>
+                </div>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- View 2: หน้าโหลดดิ้งจำลองการดึงข้อมูล API -->
+            <!-- ============================================== -->
+            <div id="view-loading" class="view-section absolute inset-0 flex flex-col items-center justify-center px-8 bg-white opacity-0 pointer-events-none hidden">
+                <div class="relative w-16 h-16 mb-4">
+                    <div class="absolute inset-0 border-4 border-blue-200 rounded-full"></div>
+                    <div class="absolute inset-0 border-4 border-blue-600 rounded-full border-t-transparent animate-spin"></div>
+                    <div class="absolute inset-0 flex items-center justify-center text-blue-600 text-xs font-bold">CC</div>
+                </div>
+                <h3 class="text-sm font-bold text-gray-800">กำลังเชื่อมต่อข้อมูล...</h3>
+                <p class="text-[10px] text-gray-500 mt-2 text-center">รอสักครู่ ระบบกำลังดึงข้อมูลโปรไฟล์จาก ChatChat อย่างปลอดภัย</p>
+            </div>
+
+            <!-- ============================================== -->
+            <!-- View 3: หน้ารายละเอียดโปรไฟล์หลังล็อกอินสำเร็จ -->
+            <!-- ============================================== -->
+            <div id="view-success" class="view-section absolute inset-0 flex flex-col px-8 pt-4 pb-8 bg-white opacity-0 pointer-events-none hidden">
+                
+                <div class="text-center mb-6">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <h2 class="text-xl font-black text-gray-900 tracking-tight">เข้าสู่ระบบสำเร็จ!</h2>
+                    <p class="text-[11px] text-gray-500">บัญชี ChatChat ของคุณเชื่อมโยงกับเกมแล้ว</p>
+                </div>
+
+                <!-- ข้อมูลผู้ใช้งานที่ได้กลับมาจาก ChatChat -->
+                <div class="bg-white border border-gray-200 shadow-sm rounded-2xl p-5 mb-6">
+                    <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4 border-b border-gray-100 pb-2">ข้อมูลผู้เล่นของคุณ</h3>
+                    
+                    <div class="flex items-center mb-4">
+                        <div class="w-14 h-14 bg-gradient-to-tr from-blue-400 to-indigo-500 rounded-full flex items-center justify-center text-white text-xl font-black mr-4 shadow-md">U</div>
+                        <div>
+                            <div class="text-sm font-bold text-gray-900" id="mock-username">User_1289</div>
+                            <div class="text-[11px] text-gray-500" id="mock-email">user@chatchat.example</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-gray-50 rounded-xl p-3 space-y-2">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-gray-500">Player ID (ChatChat)</span>
+                            <span class="text-[10px] font-mono font-bold text-gray-800">CC-998-XYZ</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-gray-500">สถานะการยืนยันตัวตน</span>
+                            <span class="text-[10px] font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded border border-green-100">ตรวจสอบแล้ว</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ปุ่มเข้าเกม -->
+                <div class="mt-auto">
+                    <button onclick="enterGame()" class="w-full bg-gray-900 text-white font-black text-sm py-4 rounded-xl shadow-xl active:scale-95 transition-transform flex justify-center items-center">
+                        เริ่มเข้าสู่โลกของเกม
+                        <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    </button>
+                    <button onclick="resetLogin()" class="w-full text-[10px] font-bold text-gray-400 mt-4 hover:text-gray-600">
+                        สลับบัญชีผู้ใช้
+                    </button>
+                </div>
+
+            </div>
+        </div>
     </div>
 
+    <script>
+        // ฟังก์ชันจำลองการทำงานเมื่อกดลิงก์ Deep Link
+        function simulateOAuthFlow(event, url) {
+            event.preventDefault(); // ป้องกันการเปิดลิงก์จริงในหน้าพรีวิวนี้
+
+            const viewLogin = document.getElementById('view-login');
+            const viewLoading = document.getElementById('view-loading');
+            const viewSuccess = document.getElementById('view-success');
+            
+            const headerBg = document.getElementById('header-bg');
+            const gameIcon = document.getElementById('game-icon');
+
+            // 1. ซ่อนหน้าล็อกอิน
+            viewLogin.classList.add('opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                viewLogin.classList.add('hidden');
+                
+                // ย่อขนาดแบนเนอร์ด้านบนให้เล็กลงเพื่อให้มีพื้นที่แสดงผลมากขึ้น
+                headerBg.classList.add('shrink');
+                gameIcon.classList.remove('w-24', 'h-24', 'text-5xl');
+                gameIcon.classList.add('w-16', 'h-16', 'text-3xl');
+
+                // 2. แสดงหน้าโหลดดิ้ง (จำลองการส่งข้อมูลไป-กลับ OAuth)
+                viewLoading.classList.remove('hidden');
+                viewLoading.classList.remove('pointer-events-none');
+                
+                // บังคับให้เบราว์เซอร์วาด UI ทันที
+                requestAnimationFrame(() => {
+                    viewLoading.classList.remove('opacity-0');
+                });
+
+                // 3. หน่วงเวลา 2 วินาที แล้วแสดงผลลัพธ์ว่าล็อกอินสำเร็จ
+                setTimeout(() => {
+                    viewLoading.classList.add('opacity-0', 'pointer-events-none');
+                    
+                    setTimeout(() => {
+                        viewLoading.classList.add('hidden');
+                        
+                        // แสดงหน้า Success (ข้อมูลผู้ใช้)
+                        viewSuccess.classList.remove('hidden');
+                        viewSuccess.classList.remove('pointer-events-none');
+                        requestAnimationFrame(() => {
+                            viewSuccess.classList.remove('opacity-0');
+                        });
+                        
+                    }, 300); // รอ transition fade out ของ loading เสร็จ
+                }, 2000); // จำลองเวลาดีเลย์ของเน็ตเวิร์ก
+
+            }, 300); // รอ transition fade out ของ login เสร็จ
+        }
+
+        // ปุ่มเข้าเกม (จำลอง)
+        function enterGame() {
+            alert("ยินดีต้อนรับเข้าสู่เกม Epic Game ABC!\nระบบได้ผูกฐานข้อมูลตัวละครเข้ากับบัญชี ChatChat เรียบร้อยแล้ว 🎮");
+        }
+
+        // ปุ่มสลับบัญชี (รีเซ็ตกลับไปหน้าแรกเพื่อทดสอบใหม่)
+        function resetLogin() {
+            const viewLogin = document.getElementById('view-login');
+            const viewSuccess = document.getElementById('view-success');
+            const headerBg = document.getElementById('header-bg');
+            const gameIcon = document.getElementById('game-icon');
+
+            viewSuccess.classList.add('opacity-0', 'pointer-events-none');
+            
+            setTimeout(() => {
+                viewSuccess.classList.add('hidden');
+                
+                // คืนค่าขนาดแบนเนอร์
+                headerBg.classList.remove('shrink');
+                gameIcon.classList.remove('w-16', 'h-16', 'text-3xl');
+                gameIcon.classList.add('w-24', 'h-24', 'text-5xl');
+
+                viewLogin.classList.remove('hidden');
+                viewLogin.classList.remove('pointer-events-none');
+                requestAnimationFrame(() => {
+                    viewLogin.classList.remove('opacity-0');
+                });
+            }, 300);
+        }
+    </script>
 </body>
 </html>
